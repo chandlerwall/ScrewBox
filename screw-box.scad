@@ -8,16 +8,20 @@ linear_extrude(height=z)
 hull()
 {
     // The circles are placed so that the outside bounding box matches the incoming x and y
-    translate([(-x/2) + r, (-y/2) + r, 0])
+    // bottom left
+    translate([r, r, 0])
     circle(r=r);
 
-    translate([(x/2) - r, (-y/2) + r, 0])
+    // bottom right
+    translate([(x) - r, r, 0])
     circle(r=r);
 
-    translate([(-x/2) + r, (y/2) - r, 0])
+    // top left
+    translate([r, (y) - r, 0])
     circle(r=r);
 
-    translate([(x/2) - r, (y/2) - r, 0])
+    // top right
+    translate([(x) - r, (y) - r, 0])
     circle(r=r);
 }
 }
@@ -26,8 +30,8 @@ module roundedRectOutline(w, l, r)
 {
 	difference(){
 		roundedRect([w,l,box_h],r);
-		translate([0,0,(bottom_layers * layer_height) + first_layer_height])
-		roundedRect([w - (perimeter_w),l - (perimeter_w),box_h],r-1);
+		translate([perimeter_w, perimeter_w,(bottom_layers * layer_height) + first_layer_height])
+			roundedRect([w - 2 * perimeter_w, l - 2 * perimeter_w,box_h],r-1);
 	}
 }
 
@@ -58,35 +62,107 @@ large_l = medium_l;
 
 union(){
 	// Main/container box
-	difference(){
-		roundedRect([box_w - perimeter_w,box_l - perimeter_w,box_h],8);
-		translate([0,0,(bottom_layers * layer_height) + first_layer_height])
-		roundedRect([box_w - perimeter_w - (2 * perimeter_w),box_l - perimeter_w - (2 * perimeter_w),box_h],7);
+	roundedRectOutline(box_w, box_l, 8);
+
+	// Row 1 (bottom)
+	union()
+	{
+		// start at bottom left corner
+		translate([0,0,0])
+		roundedRectOutline(small_w, small_l, 3);
+
+		translate([small_w,0,0])
+		roundedRectOutline(small_w, small_l, 3);
+
+		translate([2 * small_w,0,0])
+		roundedRectOutline(small_w, small_l, 3);
+
+		translate([3 * small_w,0,0])
+		roundedRectOutline(small_w, small_l, 3);
+
+		translate([4 * small_w,0,0])
+		roundedRectOutline(small_w, small_l, 3);
+
+		translate([5 * small_w,0,0])
+		roundedRectOutline(small_w, small_l, 3);
 	}
 
-	translate([small_w/2,-medium_l,0])
-	roundedRectOutline(large_w, large_l, 3);
+	// Row 2
+	translate([0,1 * small_w, 0])
+	union()
+	{
+		// start at bottom left corner
+		translate([0,0,0])
+		roundedRectOutline(small_w, small_l, 3);
 
-	// Middle row
-	#translate([small_w * 5/2 - 1/2 * perimeter_w,0,0])
-	roundedRectOutline(small_w, small_l, 3);
+		translate([small_w,0,0])
+		roundedRectOutline(small_w, small_l, 3);
 
-	translate([small_w * 3/2 - 1/4 * perimeter_w,0,0])
-	roundedRectOutline(small_w, small_l, 3);
+		translate([2 * small_w,0,0])
+		roundedRectOutline(small_w, small_l, 3);
 
-	#translate([0,0,0])
-	roundedRectOutline(medium_w, medium_l, 3);
+		translate([3 * small_w,0,0])
+		roundedRectOutline(small_w, small_l, 3);
 
-	translate([small_w * -3/2 + 1/4 * perimeter_w,0,0])
-	roundedRectOutline(small_w, small_l, 3);
+		translate([4 * small_w,0,0])
+		roundedRectOutline(small_w, small_l, 3);
 
-	#translate([small_w * -5/2 + 1/2 * perimeter_w,0,0])
-	roundedRectOutline(small_w, small_l, 3);
+		translate([5 * small_w,0,0])
+		roundedRectOutline(small_w, small_l, 3);
+	}
 
-	// 
-	translate([-1/2 * perimeter_w,medium_l - 1/4 * perimeter_w,0])
-	roundedRectOutline(medium_w, medium_l, 3);
+	// Row 3
+	translate([0,2 * small_w, 0])
+	union()
+	{
+		// start at bottom left corner
+		translate([0,0,0])
+		roundedRectOutline(medium_w, medium_l, 3);
 
-	#translate([medium_l * 2 - perimeter_w,medium_l - 1/4 * perimeter_w,0])
-	roundedRectOutline(medium_w, medium_l, 3);
+		translate([medium_w,0,0])
+		roundedRectOutline(medium_w, medium_l, 3);
+
+		translate([2 * medium_w,0,0])
+		roundedRectOutline(medium_w, medium_l, 3);
+	}
+
+	// Row 4
+	translate([0,3 * small_w, 0])
+	union()
+	{
+		// start at bottom left corner
+		translate([0,0,0])
+		roundedRectOutline(medium_w, medium_l, 3);
+
+		translate([medium_w,0,0])
+		roundedRectOutline(medium_w, medium_l, 3);
+
+		translate([2 * medium_w,0,0])
+		roundedRectOutline(medium_w, medium_l, 3);
+	}
+
+	// Row 5
+	translate([0,4 * small_w, 0])
+	union()
+	{
+		// start at bottom left corner
+		translate([0,0,0])
+		roundedRectOutline(large_w, large_l, 3);
+
+		translate([3 * small_w, 0, 0])
+		roundedRectOutline(large_w, large_l, 3);
+	}
+
+
+	// Row 6 (top)
+	translate([0,5 * small_w, 0])
+	union()
+	{
+		// start at bottom left corner
+		translate([0,0,0])
+		roundedRectOutline(large_w, large_l, 3);
+
+		translate([3 * small_w, 0, 0])
+		roundedRectOutline(large_w, large_l, 3);
+	}
 }
