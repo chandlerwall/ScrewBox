@@ -22,6 +22,15 @@ hull()
 }
 }
 
+module roundedRectOutline(w, l, r)
+{
+	difference(){
+		roundedRect([w,l,box_h],r);
+		translate([0,0,(bottom_layers * layer_height) + first_layer_height])
+		roundedRect([w - (perimeter_w),l - (perimeter_w),box_h],r-1);
+	}
+}
+
 pad = 0.01;
 smooth = 64;
 $fn = smooth;
@@ -48,44 +57,36 @@ large_w = box_w/2;
 large_l = medium_l;
 
 union(){
+	// Main/container box
 	difference(){
 		roundedRect([box_w - perimeter_w,box_l - perimeter_w,box_h],8);
 		translate([0,0,(bottom_layers * layer_height) + first_layer_height])
 		roundedRect([box_w - perimeter_w - (2 * perimeter_w),box_l - perimeter_w - (2 * perimeter_w),box_h],7);
 	}
 
-	translate([small_w/2 - perimeter_w,-medium_l + perimeter_w - pad,0])
-	difference(){
-		roundedRect([large_w,large_l,box_h],3);
-		translate([0,0,(bottom_layers * layer_height) + first_layer_height])
-		roundedRect([large_w - (2 * perimeter_w),large_l - (2 * perimeter_w),box_h],2);
-	}
+	translate([small_w/2,-medium_l,0])
+	roundedRectOutline(large_w, large_l, 3);
 
-	translate([-perimeter_w + pad,0,0])
-	difference(){
-		roundedRect([medium_w,medium_l,box_h],3);
-		translate([0,0,(bottom_layers * layer_height) + first_layer_height])
-		roundedRect([medium_w - (2 * perimeter_w),medium_l - (2 * perimeter_w),box_h],2);
-	}
+	// Middle row
+	#translate([small_w * 5/2 - 1/2 * perimeter_w,0,0])
+	roundedRectOutline(small_w, small_l, 3);
 
-	translate([small_w * 3/2 - perimeter_w + pad,0,0])
-	difference(){
-		roundedRect([small_w,small_l,box_h],3);
-		translate([0,0,(bottom_layers * layer_height) + first_layer_height])
-		roundedRect([small_w - (2 * perimeter_w),small_l - (2 * perimeter_w),box_h],2);
-	}
+	translate([small_w * 3/2 - 1/4 * perimeter_w,0,0])
+	roundedRectOutline(small_w, small_l, 3);
 
-	translate([-perimeter_w + pad,medium_l - perimeter_w + pad,0])
-	difference(){
-		roundedRect([medium_w,medium_l,box_h],3);
-		translate([0,0,(bottom_layers * layer_height) + first_layer_height])
-		roundedRect([medium_w - (2 * perimeter_w),medium_l - (2 * perimeter_w),box_h],2);
-	}
+	#translate([0,0,0])
+	roundedRectOutline(medium_w, medium_l, 3);
 
-	translate([medium_l * 2 - perimeter_w + pad,medium_l - perimeter_w + pad,0])
-	difference(){
-		roundedRect([medium_w,medium_l,box_h],3);
-		translate([0,0,(bottom_layers * layer_height) + first_layer_height])
-		roundedRect([medium_w - (2 * perimeter_w),medium_l - (2 * perimeter_w),box_h],2);
-	}
+	translate([small_w * -3/2 + 1/4 * perimeter_w,0,0])
+	roundedRectOutline(small_w, small_l, 3);
+
+	#translate([small_w * -5/2 + 1/2 * perimeter_w,0,0])
+	roundedRectOutline(small_w, small_l, 3);
+
+	// 
+	translate([-1/2 * perimeter_w,medium_l - 1/4 * perimeter_w,0])
+	roundedRectOutline(medium_w, medium_l, 3);
+
+	#translate([medium_l * 2 - perimeter_w,medium_l - 1/4 * perimeter_w,0])
+	roundedRectOutline(medium_w, medium_l, 3);
 }
