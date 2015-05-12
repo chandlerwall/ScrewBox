@@ -1,65 +1,32 @@
-module roundedRect(size, r) {
-
-x = size[0];
-y = size[1];
-z = size[2];
-
-linear_extrude(height=z)
-hull()
-{
-    // The circles are placed so that the outside bounding box matches the incoming x and y
-    // bottom left
-    translate([r, r, 0])
-    circle(r=r);
-
-    // bottom right
-    translate([(x) - r, r, 0])
-    circle(r=r);
-
-    // top left
-    translate([r, (y) - r, 0])
-    circle(r=r);
-
-    // top right
-    translate([(x) - r, (y) - r, 0])
-    circle(r=r);
-}
-}
-
-module roundedRectOutline(w, l, r)
-{
-	difference(){
-		roundedRect([w,l,box_h],r);
-		translate([perimeter_w, perimeter_w,(bottom_layers * layer_height) + first_layer_height])
-			roundedRect([w - 2 * perimeter_w, l - 2 * perimeter_w,box_h],r-1);
-	}
-}
-
+// OpenSCAD definitions
 pad = 0.01;
 smooth = 64;
 $fn = smooth;
 
-layer_height = 0.5;
-first_layer_height = 0.3;
+// Printer configuration and model optmization
+layer_h = 0.5;
+first_layer_h = 0.3;
 nozzle_d = 0.8;
-line_w = nozzle_d;
+line_w = nozzle_d * 1.1; // Use a factor of 0.9 to encourage more "pure" perimeters (trying to avoid zig-zag infill)
 perimeters = 2;
 perimeter_w = perimeters * line_w;
 bottom_layers = 2;
+bottom_h = first_layer_h + (bottom_layers * layer_h);
 
+// Model configuration
 box_w = 130;
 box_l = box_w;
-box_h = 15;
+box_h = 18;
 
+// Predefined "modular" sizes for S, M, and L screw boxes
 small_w = box_w/6;
 small_l = box_l/6;
-
 medium_w = box_w/3;
 medium_l = small_l;
-
 large_w = box_w/2;
 large_l = medium_l;
 
+// The main entry point for the ScrewBox model
 union(){
 	// Main/container box
 	roundedRectOutline(box_w, box_l, 8);
@@ -164,5 +131,42 @@ union(){
 
 		translate([3 * small_w, 0, 0])
 		roundedRectOutline(large_w, large_l, 3);
+	}
+}
+
+module roundedRect(size, r) {
+
+	x = size[0];
+	y = size[1];
+	z = size[2];
+
+	linear_extrude(height=z)
+	hull()
+	{
+	    // The circles are placed so that the outside bounding box matches the incoming x and y
+	    // bottom left
+	    translate([r, r, 0])
+	    circle(r=r);
+
+	    // bottom right
+	    translate([(x) - r, r, 0])
+	    circle(r=r);
+
+	    // top left
+	    translate([r, (y) - r, 0])
+	    circle(r=r);
+
+	    // top right
+	    translate([(x) - r, (y) - r, 0])
+	    circle(r=r);
+	}
+}
+
+module roundedRectOutline(w, l, r)
+{
+	difference(){
+		roundedRect([w,l,box_h],r);
+		translate([perimeter_w, perimeter_w, bottom_h])
+			roundedRect([w - 2 * perimeter_w, l - 2 * perimeter_w,box_h],r-1);
 	}
 }
