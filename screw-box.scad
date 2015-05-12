@@ -1,13 +1,13 @@
 // OpenSCAD definitions
 pad = 0.01;
-smooth = 64;
+smooth = 16;
 $fn = smooth;
 
 // Printer configuration and model optmization
-layer_h = 0.5;
+layer_h = 0.6;
 first_layer_h = 0.3;
 nozzle_d = 0.8;
-line_w = nozzle_d * 1.1; // Use a factor of 0.9 to encourage more "pure" perimeters (trying to avoid zig-zag infill)
+line_w = nozzle_d * 1.0; // Use a factor of 0.9 to encourage more "pure" perimeters (trying to avoid zig-zag infill)
 perimeters = 2;
 perimeter_w = perimeters * line_w;
 bottom_layers = 2;
